@@ -1,0 +1,4 @@
+Django>=5.1,<5.2
+APScheduler>=3.10,<4
+mysqlclient>=2.2
+piper-tts>=1.2

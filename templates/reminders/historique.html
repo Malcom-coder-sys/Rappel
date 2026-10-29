@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block page_title %}Historique{% endblock %}
+
+{% block content %}
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Total</div>
+    <div class="stat-val c-blue">{{ stats.total }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Succès</div>
+    <div class="stat-val c-green">{{ stats.succes }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Erreurs</div>
+    <div class="stat-val {% if stats.erreurs %}c-red{% endif %}">{{ stats.erreurs }}</div>
+  </div>
+</div>
+
+<div class="card">
+  {% if historique %}
+  {% for h in historique %}
+  <div class="hist-item">
+    <div class="hist-icon {% if h.succes %}hist-ok{% else %}hist-err{% endif %}">
+      <i class="ti ti-{% if h.succes %}check{% else %}x{% endif %}"></i>
+    </div>
+    <div class="hist-text">
+      {{ h.rappel.titre }}
+      {% if not h.succes and h.erreur %}
+      <small class="err" title="{{ h.erreur }}">{{ h.erreur }}</small>
+      {% elif h.rappel.message %}
+      <small>{{ h.rappel.message }}</small>
+      {% endif %}
+    </div>
+    <span class="canaux">
+      {% if h.rappel.vocal %}<i class="ti ti-volume" title="Lecture vocale"></i>{% endif %}
+      {% if h.rappel.notif_bureau %}<i class="ti ti-bell" title="Notification bureau"></i>{% endif %}
+    </span>
+    <div class="hist-time">{{ h.declenche_le|date:"d/m/Y H:i:s" }}</div>
+  </div>
+  {% endfor %}
+
+  {% if historique.has_other_pages %}
+  <nav class="pagination">
+    {% if historique.has_previous %}
+    <a href="?page={{ historique.previous_page_number }}" class="btn btn-ghost btn-icon"><i class="ti ti-arrow-left"></i></a>
+    {% endif %}
+    Page {{ historique.number }} / {{ historique.paginator.num_pages }}
+    {% if historique.has_next %}
+    <a href="?page={{ historique.next_page_number }}" class="btn btn-ghost btn-icon"><i class="ti ti-arrow-right"></i></a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty"><i class="ti ti-history"></i>Aucune notification déclenchée pour l'instant</div>
+  {% endif %}
+</div>
+
+{% endblock %}

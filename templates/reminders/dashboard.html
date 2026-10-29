@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block page_title %}Tableau de bord{% endblock %}
+
+{% block content %}
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Rappels actifs</div>
+    <div class="stat-val c-green">{{ stats.actifs }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Aujourd'hui</div>
+    <div class="stat-val c-orange">{{ stats.aujourd_hui }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Déclenchés</div>
+    <div class="stat-val c-blue">{{ stats.total_declenches }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Erreurs</div>
+    <div class="stat-val {% if stats.erreurs %}c-red{% endif %}">{{ stats.erreurs }}</div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+
+  <div class="stack">
+    <section class="card">
+      <h2 class="card-title">
+        Prochains rappels
+        <a href="{% url 'rappels_list' %}" class="link">Voir tout →</a>
+      </h2>
+      {% if rappels_a_venir %}
+      <div class="rappel-list">
+        {% for rappel in rappels_a_venir %}{% include "reminders/_rappel_item.html" %}{% endfor %}
+      </div>
+      {% else %}
+      <div class="empty"><i class="ti ti-bell-off"></i>Aucun rappel à venir</div>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">Rappel rapide</h2>
+      <form method="post" action="{% url 'rappel_create_quick' %}">
+        {% csrf_token %}
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="q-titre">Titre</label>
+            <input id="q-titre" type="text" name="titre" class="form-control" placeholder="Ex : Réunion standup" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="q-heure">Date et heure</label>
+            <input id="q-heure" type="datetime-local" name="heure_rappel" class="form-control" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="q-message">Message vocal <span class="form-help">(facultatif)</span></label>
+          <input id="q-message" type="text" name="message" class="form-control" placeholder="Texte lu à voix haute" />
+        </div>
+        <input type="hidden" name="vocal" value="on" />
+        <input type="hidden" name="notif_bureau" value="on" />
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary"><i class="ti ti-check"></i> Enregistrer</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2 class="card-title">
+      Historique récent
+      <a href="{% url 'historique' %}" class="link">Voir tout →</a>
+    </h2>
+    {% for h in historique %}
+    <div class="hist-item">
+      <div class="hist-icon {% if h.succes %}hist-ok{% else %}hist-err{% endif %}">
+        <i class="ti ti-{% if h.succes %}check{% else %}x{% endif %}"></i>
+      </div>
+      <div class="hist-text">{{ h.rappel.titre|truncatechars:26 }}</div>
+      <div class="hist-time">{{ h.declenche_le|date:"d/m H:i" }}</div>
+    </div>
+    {% empty %}
+    <div class="empty">Aucun historique</div>
+    {% endfor %}
+  </section>
+
+</div>
+
+{% endblock %}

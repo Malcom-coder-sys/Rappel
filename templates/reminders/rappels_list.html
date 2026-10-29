@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block page_title %}Mes rappels{% endblock %}
+
+{% block content %}
+
+<form method="get" class="toolbar">
+  <div class="search">
+    <i class="ti ti-search"></i>
+    <input type="search" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Rechercher…" />
+  </div>
+  <select name="frequence" class="form-control" onchange="this.form.submit()">
+    <option value="">Toutes les fréquences</option>
+    <option value="once"   {% if request.GET.frequence == 'once'   %}selected{% endif %}>Une fois</option>
+    <option value="daily"  {% if request.GET.frequence == 'daily'  %}selected{% endif %}>Quotidien</option>
+    <option value="weekly" {% if request.GET.frequence == 'weekly' %}selected{% endif %}>Hebdomadaire</option>
+  </select>
+  <select name="statut" class="form-control" onchange="this.form.submit()">
+    <option value="">Tous les statuts</option>
+    <option value="actif" {% if request.GET.statut == 'actif' %}selected{% endif %}>Actifs</option>
+    <option value="done"  {% if request.GET.statut == 'done'  %}selected{% endif %}>Terminés</option>
+  </select>
+</form>
+
+<div class="card">
+  {% if rappels %}
+  <div class="rappel-list">
+    {% for rappel in rappels %}{% include "reminders/_rappel_item.html" %}{% endfor %}
+  </div>
+
+  {% if rappels.has_other_pages %}
+  <nav class="pagination">
+    {% if rappels.has_previous %}
+    <a href="?{% if filtres %}{{ filtres }}&{% endif %}page={{ rappels.previous_page_number }}" class="btn btn-ghost btn-icon"><i class="ti ti-arrow-left"></i></a>
+    {% endif %}
+    Page {{ rappels.number }} / {{ rappels.paginator.num_pages }}
+    {% if rappels.has_next %}
+    <a href="?{% if filtres %}{{ filtres }}&{% endif %}page={{ rappels.next_page_number }}" class="btn btn-ghost btn-icon"><i class="ti ti-arrow-right"></i></a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty">
+    <i class="ti ti-bell-off"></i>
+    Aucun rappel trouvé
+    {% if not request.GET %}<br><a href="{% url 'rappel_create' %}" class="btn btn-primary"><i class="ti ti-plus"></i> Créer mon premier rappel</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

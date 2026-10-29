@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block page_title %}Paramètres{% endblock %}
+
+{% block content %}
+<div class="page-narrow stack">
+
+  <section class="card">
+    <h2 class="card-title">Voix Piper</h2>
+    <div class="form-group">
+      <label class="form-label">Modèle</label>
+      <input class="form-control" value="{{ piper_model }}" readonly />
+      <span class="form-help">Variable d'environnement <code>PIPER_MODEL</code></span>
+    </div>
+    <form method="post" action="{% url 'tester_voix' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-ghost btn-sm"><i class="ti ti-player-play"></i> Tester la voix</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2 class="card-title">Déclenchement</h2>
+    <p class="form-help" style="margin-bottom:14px">
+      {% if scheduler %}
+      Le planificateur intégré vérifie les rappels chaque minute.
+      {% else %}
+      Planificateur intégré désactivé (<code>RAPPEL_SCHEDULER=0</code>) : n8n doit appeler l'API.
+      {% endif %}
+    </p>
+    <div class="form-group">
+      <label class="form-label">URL n8n</label>
+      <input class="form-control" value="{{ n8n_url }}" readonly />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Endpoint API</label>
+      <input class="form-control" value="{{ api_url }}" readonly />
+      <span class="form-help">Jeton d'API : {% if api_token %}activé{% else %}aucun (<code>RAPPEL_API_TOKEN</code>){% endif %}</span>
+    </div>
+    <a href="{{ n8n_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm"><i class="ti ti-external-link"></i> Ouvrir n8n</a>
+  </section>
+
+</div>
+{% endblock %}

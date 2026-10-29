@@ -1,0 +1,21 @@
+<div class="rappel-item {% if not rappel.actif %}done{% endif %}">
+  <span class="status-dot {% if not rappel.actif %}dot-done{% elif rappel.est_bientot %}dot-soon{% else %}dot-active{% endif %}"
+        title="{% if not rappel.actif %}Terminé{% elif rappel.est_bientot %}Dans moins d'une heure{% else %}Actif{% endif %}"></span>
+  <div class="rappel-body">
+    <div class="rappel-titre">{{ rappel.titre }}</div>
+    {% if rappel.message %}<div class="rappel-meta">{{ rappel.message }}</div>{% endif %}
+  </div>
+  <span class="canaux">
+    {% if rappel.vocal %}<i class="ti ti-volume" title="Lecture vocale"></i>{% endif %}
+    {% if rappel.notif_bureau %}<i class="ti ti-bell" title="Notification bureau"></i>{% endif %}
+  </span>
+  <span class="pill pill-{{ rappel.frequence }}">{{ rappel.get_frequence_display }}</span>
+  <div class="rappel-date">{{ rappel.heure_rappel|date:"d/m/Y" }}<br>{{ rappel.heure_rappel|time:"H:i" }}</div>
+  <div class="rappel-actions">
+    <form method="post" action="{% url 'rappel_test' rappel.pk %}" class="inline-form">
+      {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}" />
+      <button class="btn btn-ghost btn-icon" title="Tester maintenant"><i class="ti ti-player-play"></i></button>
+    </form>
+    <a href="{% url 'rappel_edit' rappel.pk %}" class="btn btn-ghost btn-icon" title="Modifier"><i class="ti ti-edit"></i></a>
+  </div>
+</div>
